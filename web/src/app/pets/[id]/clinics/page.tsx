@@ -1,6 +1,8 @@
 'use client';
+
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { Plus, Stethoscope } from 'lucide-react';
 import { AppShell } from '@/components/AppShell';
 import { useI18n } from '@/components/I18nProvider';
 import { useSession } from '@/hooks/useSession';
@@ -28,7 +30,8 @@ export default function ClinicsPage() {
     await api(`/api/pets/${id}/clinics`, {
       token, body: { placeId: placeId || `manual-${Date.now()}`, label, isPrimary: list.length === 0 },
     });
-    setLabel(''); setPlaceId('');
+    setLabel('');
+    setPlaceId('');
     await refresh();
   }
 
@@ -45,28 +48,46 @@ export default function ClinicsPage() {
   }
 
   return (
-    <AppShell title={t.clinicsManage}>
+    <AppShell title={t.clinicsManage} subtitle="จัดการคลินิกที่พาน้องไปเป็นประจำ">
       <ul className="space-y-3 mb-6">
         {list.length === 0 ? <p className="text-[var(--muted)]">{t.empty}</p> : null}
         {list.map((c) => (
           <li key={c.id} className="card">
-            <p className="font-medium">{c.label}{c.is_primary ? ' · ประจำ' : ''}</p>
-            <p className="text-xs text-[var(--muted)] break-all">{c.place_id}</p>
-            <div className="flex gap-2 mt-3">
-              {!c.is_primary ? <button type="button" className="btn btn-ghost" onClick={() => makePrimary(c.id)}>ตั้งเป็นประจำ</button> : null}
+            <div className="flex items-start gap-3">
+              <div className="grid h-11 w-11 place-items-center rounded-xl bg-[var(--mint)] text-[var(--forest)]">
+                <Stethoscope size={20} aria-hidden />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-bold">{c.label}</p>
+                  {c.is_primary ? (
+                    <span className="rounded-full bg-[var(--mint)] px-2 py-1 text-[10px] font-bold text-[var(--forest)]">
+                      {t.primaryClinic}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-1 text-xs text-[var(--muted)] break-all">{c.place_id}</p>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {!c.is_primary ? (
+                <button type="button" className="btn btn-ghost" onClick={() => makePrimary(c.id)}>ตั้งเป็นประจำ</button>
+              ) : null}
               <button type="button" className="btn btn-ghost" onClick={() => remove(c.id)}>ลบ</button>
             </div>
           </li>
         ))}
       </ul>
+
       <form onSubmit={add} className="card space-y-3">
+        <p className="font-semibold flex items-center gap-2"><Plus size={16} aria-hidden /> เพิ่มคลินิก</p>
         <label className="block">
-          <span className="text-sm">ชื่อคลินิก</span>
-          <input className="mt-1 w-full min-h-11 rounded-xl border border-[var(--line)] px-3" required value={label} onChange={(e) => setLabel(e.target.value)} />
+          <span className="mb-1.5 block text-sm font-semibold">ชื่อคลินิก</span>
+          <input className="field" required value={label} onChange={(e) => setLabel(e.target.value)} />
         </label>
         <label className="block">
-          <span className="text-sm">Place ID (ถ้ามี)</span>
-          <input className="mt-1 w-full min-h-11 rounded-xl border border-[var(--line)] px-3" value={placeId} onChange={(e) => setPlaceId(e.target.value)} />
+          <span className="mb-1.5 block text-sm font-semibold">Place ID (ถ้ามี)</span>
+          <input className="field" value={placeId} onChange={(e) => setPlaceId(e.target.value)} />
         </label>
         <button type="submit" className="btn btn-primary w-full">บันทึก</button>
       </form>

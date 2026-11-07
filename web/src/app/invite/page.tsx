@@ -1,6 +1,8 @@
 'use client';
+
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ArrowRight } from 'lucide-react';
 import { AppShell } from '@/components/AppShell';
 import { useI18n } from '@/components/I18nProvider';
 import { useSession } from '@/hooks/useSession';
@@ -17,10 +19,11 @@ export default function InvitePage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (!token) return;
-    setBusy(true); setErr('');
+    setBusy(true);
+    setErr('');
     try {
       await api('/api/invite/redeem', { token, body: { code } });
-      router.replace('/');
+      router.replace('/app');
     } catch (e) {
       setErr(e instanceof ApiError ? e.code : t.error);
     } finally {
@@ -29,19 +32,22 @@ export default function InvitePage() {
   }
 
   return (
-    <AppShell title={t.inviteTitle}>
+    <AppShell title={t.inviteTitle} subtitle={t.inviteHint} showDisclaimer={false}>
       <form onSubmit={onSubmit} className="card space-y-4">
-        <p className="text-sm text-[var(--muted)]">{t.inviteHint}</p>
+        <label className="block text-sm font-semibold" htmlFor="invite">{t.inviteTitle}</label>
         <input
-          className="w-full min-h-11 rounded-xl border border-[var(--line)] bg-white px-3 uppercase tracking-wider"
+          id="invite"
+          className="field font-mono text-lg tracking-widest uppercase"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="RAK-XXXX-XXXX"
           required
-          aria-label={t.inviteTitle}
         />
-        {err ? <p className="text-[var(--danger)]" role="alert">{err}</p> : null}
-        <button type="submit" className="btn btn-primary w-full" disabled={busy}>{busy ? t.loading : t.inviteSubmit}</button>
+        {err ? <p className="text-[var(--coral)]" role="alert">{err}</p> : null}
+        <button type="submit" className="btn btn-primary w-full" disabled={busy}>
+          {busy ? t.loading : t.inviteSubmit}
+          {!busy ? <ArrowRight size={16} aria-hidden /> : null}
+        </button>
       </form>
     </AppShell>
   );

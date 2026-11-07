@@ -3,59 +3,127 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f3f0e8;
-  --ink: #1c2a24;
-  --muted: #5c6b63;
-  --line: #d5ddd6;
-  --brand: #1f6b4f;
+  --paper: #f6f5ef;
+  --surface: #fffef9;
+  --ink: #1d2b25;
+  --muted: #718078;
+  --forest: #174b38;
+  --leaf: #287b59;
+  --mint: #dfeee4;
+  --line: #dce4dc;
+  --amber: #b87218;
+  --amber-bg: #fff0d3;
+  --coral: #b7443d;
+  --coral-bg: #ffe6e2;
+  --shadow: 0 12px 32px rgba(28, 56, 43, 0.07);
+
+  /* aliases used by existing screens */
+  --bg: var(--paper);
+  --brand: var(--forest);
   --brand-ink: #f7faf7;
-  --zone-green: #2f7d4a;
-  --zone-yellow: #b8860b;
-  --zone-red: #b42318;
-  --card: #fffcf6;
-  --danger: #8f1d14;
+  --card: var(--surface);
+  --danger: var(--coral);
+  --zone-green: var(--leaf);
+  --zone-yellow: var(--amber);
+  --zone-red: var(--coral);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--paper);
 }
 
 body {
+  margin: 0;
   background:
-    radial-gradient(1200px 600px at 10% -10%, #dfece3 0%, transparent 55%),
+    radial-gradient(1200px 600px at 10% -10%, #dcebdc 0%, transparent 55%),
     radial-gradient(900px 500px at 100% 0%, #efe6d4 0%, transparent 50%),
-    var(--bg);
+    var(--paper);
   color: var(--ink);
-  font-family: var(--font-body), "Noto Sans Thai", system-ui, sans-serif;
+  font-family: var(--font-body), "Noto Sans Thai", "DM Sans", system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.65;
 }
 
 .font-display {
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  letter-spacing: -0.03em;
 }
 
 .btn {
-  @apply inline-flex items-center justify-center font-semibold rounded-xl px-4;
+  @apply inline-flex items-center justify-center gap-2 font-semibold rounded-xl px-4 transition active:scale-[.98];
   min-height: 44px;
   min-width: 44px;
 }
-.btn-primary { background: var(--brand); color: var(--brand-ink); }
-.btn-ghost { border: 1px solid var(--line); background: var(--card); }
-.btn-danger { background: var(--danger); color: white; }
+.btn-primary {
+  background: var(--forest);
+  color: white;
+  box-shadow: 0 8px 18px rgba(23, 75, 56, 0.16);
+}
+.btn-primary:hover { background: #0f3a2b; }
+.btn-ghost {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--forest);
+}
+.btn-ghost:hover { background: white; }
+.btn-soft {
+  background: var(--mint);
+  color: var(--forest);
+}
+.btn-danger {
+  background: var(--coral);
+  color: white;
+}
 
 .zone-pill {
-  @apply inline-flex items-center gap-2 font-bold rounded-full px-3;
-  min-height: 44px;
-  border: 2px solid currentColor;
+  @apply inline-flex items-center gap-1.5 font-semibold rounded-full px-2.5 py-1 text-xs;
+  min-height: 32px;
 }
-.zone-green { color: var(--zone-green); }
-.zone-yellow { color: var(--zone-yellow); }
-.zone-red { color: var(--zone-red); }
+.zone-green { background: var(--mint); color: var(--forest); }
+.zone-yellow { background: var(--amber-bg); color: var(--amber); }
+.zone-red { background: var(--coral-bg); color: var(--coral); }
 
 .card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 1rem;
   padding: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.field {
+  @apply w-full rounded-xl border border-[var(--line)] bg-white px-3 text-sm outline-none;
+  min-height: 48px;
+}
+.field:focus {
+  border-color: var(--leaf);
+  box-shadow: 0 0 0 2px var(--mint);
+}
+
+@keyframes enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-soft {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(183, 68, 61, 0.08); }
+  50% { box-shadow: 0 0 0 10px rgba(183, 68, 61, 0); }
+}
+.animate-enter { animation: enter 0.4s ease-out both; }
+.animate-emergency { animation: pulse-soft 2.4s ease-in-out infinite; }
+
+::selection {
+  background: #b9ddc5;
+  color: var(--forest);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

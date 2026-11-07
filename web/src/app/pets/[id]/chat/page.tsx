@@ -1,7 +1,10 @@
 'use client';
+
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { AppShell } from '@/components/AppShell';
+import { ArrowLeft, ArrowRight, Check, PawPrint, X } from 'lucide-react';
+import { ZonePill } from '@/components/ZonePill';
 import { useI18n } from '@/components/I18nProvider';
 import { useSession } from '@/hooks/useSession';
 import { api, ApiError, type AgentResult } from '@/lib/api';
@@ -30,13 +33,17 @@ export default function ChatPage() {
       .catch(() => setMsgs([]));
   }, [token, id]);
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs, proposals]);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [msgs, proposals]);
 
   async function send(e: FormEvent) {
     e.preventDefault();
     if (!token || !text.trim() || busy) return;
     const message = text.trim();
-    setText(''); setBusy(true); setErr('');
+    setText('');
+    setBusy(true);
+    setErr('');
     setMsgs((m) => [...m, { role: 'user', content: message }]);
     try {
       let location: { lat: number; lng: number } | undefined;
@@ -79,59 +86,101 @@ export default function ChatPage() {
   }
 
   return (
-    <AppShell title="แชท">
-      {zone ? (
-        <div className={`zone-pill zone-${zone} mb-3`} role="status">
-          <span aria-hidden>{zone === 'red' ? '!' : zone === 'yellow' ? '▲' : '●'}</span>
-          {zone === 'green' ? t.zoneGreen : zone === 'yellow' ? t.zoneYellow : t.zoneRed}
-        </div>
-      ) : null}
-      {watchFor.length ? (
-        <ul className="card mb-3 text-sm list-disc pl-5">
-          {watchFor.map((w) => <li key={w}>{w}</li>)}
-        </ul>
-      ) : null}
+    <main className="min-h-dvh px-4 py-5 sm:px-6">
+      <div className="mx-auto max-w-[640px] animate-enter flex min-h-[calc(100dvh-2.5rem)] flex-col">
+        <header className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/app"
+              className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--line)] bg-white"
+              aria-label="Back"
+            >
+              <ArrowLeft size={18} aria-hidden />
+            </Link>
+            <div>
+              <h1 className="font-bold text-[var(--forest)]">RakSat</h1>
+              <p className="text-xs text-[var(--muted)]">{t.chatCta}</p>
+            </div>
+          </div>
+          {zone ? <ZonePill zone={zone} /> : <span className="w-11" />}
+        </header>
 
-      <div className="space-y-3 mb-4" aria-live="polite">
-        {msgs.length === 0 ? <p className="text-[var(--muted)]">{t.empty}</p> : null}
-        {msgs.map((m, i) => (
-          <div key={m.id ?? i} className={`card ${m.role === 'user' ? 'bg-[var(--brand)] text-[var(--brand-ink)] border-transparent' : ''}`}>
-            {m.content}
+        {watchFor.length ? (
+          <div className="mb-4 rounded-2xl border border-[var(--amber)]/30 bg-[var(--amber-bg)] p-3">
+            <p className="mb-2 text-xs font-bold text-[var(--amber)]">{t.zoneYellow}</p>
+            <ul className="space-y-1 text-xs leading-5 text-[#75501e] list-disc pl-4">
+              {watchFor.map((w) => <li key={w}>{w}</li>)}
+            </ul>
+          </div>
+        ) : null}
+
+        <div className="flex-1 space-y-4 pb-4" aria-live="polite">
+          {msgs.length === 0 ? <p className="text-sm text-[var(--muted)]">{t.empty}</p> : null}
+          {msgs.map((m, i) => (
+            m.role === 'user' ? (
+              <div key={m.id ?? i} className="flex justify-end">
+                <div className="max-w-[82%] rounded-2xl rounded-tr-sm bg-[var(--forest)] p-3 text-sm leading-6 text-white">
+                  {m.content}
+                </div>
+              </div>
+            ) : (
+              <div key={m.id ?? i} className="flex gap-2">
+                <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--forest)] text-white">
+                  <PawPrint size={16} aria-hidden />
+                </div>
+                <div className="max-w-[88%] rounded-2xl rounded-tl-sm bg-white p-3 text-sm leading-6 shadow-sm border border-[var(--line)]">
+                  {m.content}
+                </div>
+              </div>
+            )
+          ))}
+          <div ref={endRef} />
+        </div>
+
+        {proposals.map((p) => (
+          <div key={p.id} className="card mb-3 border-[var(--leaf)]/30">
+            <p className="mb-3 text-sm font-semibold">{p.preview}</p>
+            <div className="flex gap-2">
+              <button type="button" className="btn btn-primary flex-1" onClick={() => resolveProposal(p.id, 'confirm')}>
+                <Check size={15} aria-hidden /> {t.confirm}
+              </button>
+              <button type="button" className="btn btn-ghost flex-1" onClick={() => resolveProposal(p.id, 'reject')}>
+                <X size={15} aria-hidden /> {t.reject}
+              </button>
+            </div>
           </div>
         ))}
-        <div ref={endRef} />
-      </div>
 
-      {proposals.map((p) => (
-        <div key={p.id} className="card mb-3 border-[var(--brand)]">
-          <p className="mb-3">{p.preview}</p>
-          <div className="flex gap-2">
-            <button type="button" className="btn btn-primary flex-1" onClick={() => resolveProposal(p.id, 'confirm')}>{t.confirm}</button>
-            <button type="button" className="btn btn-ghost flex-1" onClick={() => resolveProposal(p.id, 'reject')}>{t.reject}</button>
+        {sessionId ? (
+          <div className="flex gap-2 mb-3">
+            <button type="button" className="btn btn-ghost flex-1" onClick={() => rate(1)}>{t.helpfulYes}</button>
+            <button type="button" className="btn btn-ghost flex-1" onClick={() => rate(-1)}>{t.helpfulNo}</button>
           </div>
-        </div>
-      ))}
+        ) : null}
 
-      {sessionId ? (
-        <div className="flex gap-2 mb-4">
-          <button type="button" className="btn btn-ghost flex-1" onClick={() => rate(1)} aria-label="helpful">ช่วยได้</button>
-          <button type="button" className="btn btn-ghost flex-1" onClick={() => rate(-1)} aria-label="not helpful">ยังไม่ตรง</button>
-        </div>
-      ) : null}
+        {err ? <p className="text-[var(--coral)] mb-2 text-sm" role="alert">{err}</p> : null}
 
-      {err ? <p className="text-[var(--danger)] mb-2" role="alert">{err}</p> : null}
-      <form onSubmit={send} className="flex gap-2 sticky bottom-3">
-        <input
-          className="flex-1 min-h-11 rounded-xl border border-[var(--line)] px-3 bg-[var(--card)]"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="เล่าอาการ…"
-          disabled={busy}
-          maxLength={2000}
-        />
-        <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? '…' : 'ส่ง'}</button>
-      </form>
-      <p className="text-xs text-[var(--muted)] mt-2">{t.disclaimer}</p>
-    </AppShell>
+        <p className="mb-2 text-center text-[10px] text-[var(--muted)]">{t.disclaimer}</p>
+        <form onSubmit={send} className="flex gap-2 rounded-2xl border border-[var(--line)] bg-white p-2 shadow-sm">
+          <input
+            className="h-10 flex-1 bg-transparent px-2 text-sm outline-none"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t.chatCta}
+            disabled={busy}
+            maxLength={2000}
+            aria-label={t.chatCta}
+          />
+          <button
+            type="submit"
+            className="grid h-10 w-10 place-items-center rounded-xl bg-[var(--forest)] text-white disabled:opacity-50"
+            disabled={busy}
+            aria-label="Send"
+          >
+            <ArrowRight size={17} aria-hidden />
+          </button>
+        </form>
+      </div>
+    </main>
   );
 }

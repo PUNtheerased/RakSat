@@ -39,6 +39,20 @@ export type Messages = {
   helpfulYes: string;
   helpfulNo: string;
   admin: string;
+  openApp: string;
+  landingHeadline: string;
+  landingLead: string;
+  landingCta: string;
+  landingHow: string;
+  landingHowTitle: string;
+  landingStep1Title: string;
+  landingStep1Body: string;
+  landingStep2Title: string;
+  landingStep2Body: string;
+  landingStep3Title: string;
+  landingStep3Body: string;
+  landingNotTitle: string;
+  landingNotBody: string;
 };
 
 export const th: Messages = {
@@ -83,4 +97,19 @@ export const th: Messages = {
   helpfulYes: 'เป็นประโยชน์',
   helpfulNo: 'ยังไม่ช่วย',
   admin: 'แอดมิน',
+  openApp: 'เข้าใช้งาน',
+  landingHeadline: 'รู้ว่าควรรอหรือควรพาไปคลินิก',
+  landingLead:
+    'RakSat ช่วยคัดกรองอาการสุนัขและแมวเบื้องต้น เตือนเมื่อน่าเป็นห่วง และสรุปอาการให้สัตวแพทย์เมื่อคุณยืนยัน',
+  landingCta: 'เริ่มใช้งาน',
+  landingHow: 'ดูว่าระบบช่วยอะไร',
+  landingHowTitle: 'ทำงานอย่างไร',
+  landingStep1Title: 'เล่าอาการเป็นภาษาพูด',
+  landingStep1Body: 'ระบบประเมินความเร่งด่วนเป็นโซนเขียว เหลือง หรือแดง พร้อมเหตุผลสั้นๆ',
+  landingStep2Title: 'ถ้าฉุกเฉิน จะพาหาคลินิกทันที',
+  landingStep2Body: 'โชว์คลินิกประจำและคลินิกใกล้ที่เปิดอยู่ พร้อมส่งสรุปให้หมอเมื่อคุณกดยืนยัน',
+  landingStep3Title: 'คุณเป็นผู้ตัดสินใจเสมอ',
+  landingStep3Body: 'การบันทึก การตั้งเตือน และการแชร์ข้อมูลต้องผ่านปุ่มยืนยันของคุณ',
+  landingNotTitle: 'สิ่งที่ RakSat ไม่ทำ',
+  landingNotBody: 'ไม่วินิจฉัยโรค ไม่บอกชื่อยาหรือขนาดยา และไม่แทนที่การตรวจโดยสัตวแพทย์',
 };

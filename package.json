@@ -5,6 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "dev:api": "tsx watch src/server.ts",
+    "dev:web": "npm --prefix web run dev",
+    "dev:worker": "tsx src/worker.ts",
+    "dev:all": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-all.ps1",
+    "install:all": "npm install && npm --prefix web install",
     "worker": "tsx src/worker.ts",
     "build": "tsc",
     "start": "node dist/server.js",

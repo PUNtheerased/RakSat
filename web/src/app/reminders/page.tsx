@@ -1,5 +1,7 @@
 'use client';
+
 import { useEffect, useState } from 'react';
+import { Bell, Clock3 } from 'lucide-react';
 import { AppShell } from '@/components/AppShell';
 import { useI18n } from '@/components/I18nProvider';
 import { useSession } from '@/hooks/useSession';
@@ -26,14 +28,30 @@ export default function RemindersPage() {
 
   return (
     <AppShell title={t.reminders}>
-      {items === null ? <p>{t.loading}</p> : items.length === 0 ? <p className="text-[var(--muted)]">{t.empty}</p> : (
+      {items === null ? (
+        <p aria-live="polite">{t.loading}</p>
+      ) : items.length === 0 ? (
+        <div className="card text-center text-[var(--muted)]">
+          <Bell size={24} className="mx-auto mb-3 text-[var(--leaf)]" aria-hidden />
+          <p>{t.empty}</p>
+        </div>
+      ) : (
         <ul className="space-y-3">
           {items.map((r) => (
             <li key={r.id} className="card">
-              <p className="font-medium">{r.title}</p>
-              {r.body ? <p className="text-sm text-[var(--muted)]">{r.body}</p> : null}
-              <p className="text-xs text-[var(--muted)] mt-1">{new Date(r.next_run_at).toLocaleString()}</p>
-              <button type="button" className="btn btn-ghost mt-3" onClick={() => cancel(r.id)}>ยกเลิก</button>
+              <div className="flex items-start gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-[var(--amber-bg)] text-[var(--amber)]">
+                  <Clock3 size={18} aria-hidden />
+                </div>
+                <div className="flex-1">
+                  <p className="font-bold">{r.title}</p>
+                  {r.body ? <p className="mt-1 text-sm text-[var(--muted)]">{r.body}</p> : null}
+                  <p className="mt-1 text-xs text-[var(--muted)]">{new Date(r.next_run_at).toLocaleString()}</p>
+                </div>
+              </div>
+              <button type="button" className="btn btn-ghost mt-3 w-full" onClick={() => cancel(r.id)}>
+                ยกเลิก
+              </button>
             </li>
           ))}
         </ul>

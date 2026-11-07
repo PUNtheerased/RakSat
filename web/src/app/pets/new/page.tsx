@@ -1,24 +1,27 @@
 'use client';
+
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Check } from 'lucide-react';
 import { AppShell } from '@/components/AppShell';
 import { useI18n } from '@/components/I18nProvider';
 import { useSession } from '@/hooks/useSession';
 import { api, ApiError } from '@/lib/api';
 
 export default function NewPetPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { token } = useSession();
   const router = useRouter();
   const [name, setName] = useState('');
-  const [species, setSpecies] = useState<'dog' | 'cat'>('dog');
+  const [species, setSpecies] = useState<'dog' | 'cat'>('cat');
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (!token) return;
-    setBusy(true); setErr('');
+    setBusy(true);
+    setErr('');
     try {
       const pet = await api<{ id: string }>('/api/pets', { token, body: { name, species } });
       router.replace(`/pets/${pet.id}/chat`);
@@ -29,21 +32,43 @@ export default function NewPetPage() {
   }
 
   return (
-    <AppShell title={t.addPet}>
+    <AppShell title={t.addPet} subtitle={locale === 'th' ? 'เพิ่มข้อมูลน้องเพื่อเริ่มประเมินอาการ' : 'Add a pet to start triage'}>
       <form onSubmit={onSubmit} className="card space-y-4">
         <label className="block">
-          <span className="text-sm">ชื่อ</span>
-          <input className="mt-1 w-full min-h-11 rounded-xl border border-[var(--line)] px-3 bg-white" required maxLength={60} value={name} onChange={(e) => setName(e.target.value)} />
+          <span className="mb-1.5 block text-sm font-semibold">{locale === 'th' ? 'ชื่อของน้อง' : 'Pet name'}</span>
+          <input
+            className="field"
+            required
+            maxLength={60}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={locale === 'th' ? 'เช่น มะลิ' : 'e.g. Mali'}
+          />
         </label>
         <fieldset>
-          <legend className="text-sm mb-2">ชนิด</legend>
-          <div className="flex gap-2">
-            <button type="button" className={`btn flex-1 ${species === 'dog' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setSpecies('dog')}>สุนัข</button>
-            <button type="button" className={`btn flex-1 ${species === 'cat' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setSpecies('cat')}>แมว</button>
+          <legend className="mb-2 text-sm font-semibold">{locale === 'th' ? 'ประเภท' : 'Species'}</legend>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              className={`min-h-12 rounded-xl text-sm font-semibold ${species === 'cat' ? 'border-2 border-[var(--forest)] bg-[var(--mint)]' : 'border border-[var(--line)]'}`}
+              onClick={() => setSpecies('cat')}
+            >
+              {locale === 'th' ? 'แมว' : 'Cat'}
+            </button>
+            <button
+              type="button"
+              className={`min-h-12 rounded-xl text-sm font-semibold ${species === 'dog' ? 'border-2 border-[var(--forest)] bg-[var(--mint)]' : 'border border-[var(--line)]'}`}
+              onClick={() => setSpecies('dog')}
+            >
+              {locale === 'th' ? 'สุนัข' : 'Dog'}
+            </button>
           </div>
         </fieldset>
-        {err ? <p className="text-[var(--danger)]" role="alert">{err}</p> : null}
-        <button type="submit" className="btn btn-primary w-full" disabled={busy}>{busy ? t.loading : t.addPet}</button>
+        {err ? <p className="text-[var(--coral)]" role="alert">{err}</p> : null}
+        <button type="submit" className="btn btn-primary w-full" disabled={busy}>
+          {busy ? t.loading : t.addPet}
+          {!busy ? <Check size={16} aria-hidden /> : null}
+        </button>
       </form>
     </AppShell>
   );
