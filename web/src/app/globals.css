@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f3f0e8;
+  --ink: #1c2a24;
+  --muted: #5c6b63;
+  --line: #d5ddd6;
+  --brand: #1f6b4f;
+  --brand-ink: #f7faf7;
+  --zone-green: #2f7d4a;
+  --zone-yellow: #b8860b;
+  --zone-red: #b42318;
+  --card: #fffcf6;
+  --danger: #8f1d14;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #dfece3 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #efe6d4 0%, transparent 50%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body), "Noto Sans Thai", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center font-semibold rounded-xl px-4;
+  min-height: 44px;
+  min-width: 44px;
+}
+.btn-primary { background: var(--brand); color: var(--brand-ink); }
+.btn-ghost { border: 1px solid var(--line); background: var(--card); }
+.btn-danger { background: var(--danger); color: white; }
+
+.zone-pill {
+  @apply inline-flex items-center gap-2 font-bold rounded-full px-3;
+  min-height: 44px;
+  border: 2px solid currentColor;
+}
+.zone-green { color: var(--zone-green); }
+.zone-yellow { color: var(--zone-yellow); }
+.zone-red { color: var(--zone-red); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
